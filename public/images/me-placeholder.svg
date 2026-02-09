@@ -1,0 +1,14 @@
+<svg width="800" height="800" viewBox="0 0 800 800" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="800" height="800" rx="42" fill="#FFF8DF"/>
+  <rect x="40" y="40" width="720" height="720" rx="26" fill="#FFFFFF" stroke="#1F2136" stroke-width="8" stroke-dasharray="18 16"/>
+  <circle cx="400" cy="285" r="125" fill="#C8F5EF" stroke="#1F2136" stroke-width="8"/>
+  <rect x="208" y="430" width="384" height="210" rx="105" fill="#FFE0D6" stroke="#1F2136" stroke-width="8"/>
+  <path d="M334 265C334 279 324 290 311 290C298 290 288 279 288 265C288 250 298 240 311 240C324 240 334 250 334 265Z" fill="#1F2136"/>
+  <path d="M512 265C512 279 502 290 489 290C476 290 466 279 466 265C466 250 476 240 489 240C502 240 512 250 512 265Z" fill="#1F2136"/>
+  <path d="M305 338C332 366 370 382 400 382C430 382 468 366 495 338" stroke="#1F2136" stroke-width="8" stroke-linecap="round"/>
+  <path d="M95 130L180 170" stroke="#F0564A" stroke-width="12" stroke-linecap="round"/>
+  <path d="M700 140L635 205" stroke="#F0564A" stroke-width="12" stroke-linecap="round"/>
+  <path d="M670 605L590 645" stroke="#F5BE2C" stroke-width="12" stroke-linecap="round"/>
+  <path d="M130 615L210 665" stroke="#30B7AA" stroke-width="12" stroke-linecap="round"/>
+  <text x="400" y="720" text-anchor="middle" fill="#1F2136" font-family="Trebuchet MS, sans-serif" font-size="46" font-weight="700">Hier dein Bild einsetzen</text>
+</svg>

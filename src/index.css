@@ -1,0 +1,368 @@
+:root {
+  font-family: "Trebuchet MS", "Lucida Sans", sans-serif;
+  color: #1f2136;
+  background: #fff8df;
+  line-height: 1.45;
+  font-weight: 400;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100dvh;
+  background:
+    radial-gradient(circle at 9% 10%, #fff3a8 0, #fff3a8 11%, transparent 12%),
+    radial-gradient(circle at 90% 18%, #7de0d3 0, #7de0d3 9%, transparent 10%),
+    radial-gradient(circle at 20% 85%, #ffb487 0, #ffb487 12%, transparent 13%),
+    linear-gradient(140deg, #ffeeb0 0%, #ffe4d6 47%, #c8f5ef 100%);
+  color: #1f2136;
+}
+
+h1,
+h2,
+h3 {
+  margin: 0;
+  font-family: "Cooper Black", "Impact", "Trebuchet MS", sans-serif;
+  line-height: 1.15;
+}
+
+h1 {
+  font-size: clamp(1.8rem, 6vw, 2.7rem);
+}
+
+h2 {
+  font-size: clamp(1.1rem, 4.6vw, 1.45rem);
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+.app-shell {
+  min-height: 100dvh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding:
+    calc(14px + env(safe-area-inset-top))
+    12px
+    calc(24px + env(safe-area-inset-bottom));
+}
+
+.main-card,
+.result-card {
+  width: min(100%, 740px);
+  background: rgba(255, 255, 255, 0.92);
+  border: 3px solid #1f2136;
+  border-radius: 24px;
+  padding: 16px;
+  box-shadow: 0 14px 38px rgba(15, 33, 36, 0.18);
+  position: relative;
+  overflow: hidden;
+}
+
+.main-card::before,
+.result-card::before {
+  content: "";
+  position: absolute;
+  inset: 10px;
+  border: 2px dashed rgba(31, 33, 54, 0.24);
+  border-radius: 18px;
+  pointer-events: none;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 10px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 2px solid #1f2136;
+  background: #f5be2c;
+  color: #1f2136;
+  font-size: 0.86rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.intro-copy,
+.result-copy {
+  margin-top: 12px;
+  font-size: 1.02rem;
+}
+
+.timer-box {
+  margin-top: 16px;
+  padding: 12px;
+  border: 2px solid #1f2136;
+  border-radius: 14px;
+  background: #f6f7fb;
+}
+
+.timer-box p {
+  margin: 8px 0;
+}
+
+.joke-message {
+  margin-top: 8px;
+  font-weight: 700;
+  color: #cc2b2b;
+}
+
+.answer-form {
+  margin-top: 18px;
+  display: grid;
+  gap: 16px;
+}
+
+.input-label {
+  display: grid;
+  gap: 8px;
+  font-weight: 700;
+}
+
+.text-input,
+.text-area {
+  width: 100%;
+  border: 2px solid #1f2136;
+  border-radius: 12px;
+  padding: 12px;
+  background: #fffffe;
+  min-height: 48px;
+}
+
+.text-area {
+  min-height: 128px;
+  resize: vertical;
+}
+
+.option-block {
+  display: grid;
+  gap: 10px;
+}
+
+.tiny-copy {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.option-grid {
+  display: grid;
+  gap: 10px;
+}
+
+.option-button {
+  border: 2px solid #1f2136;
+  border-radius: 14px;
+  padding: 12px;
+  min-height: 52px;
+  text-align: left;
+  font-size: 0.97rem;
+  font-weight: 700;
+  transition: transform 140ms ease, box-shadow 140ms ease, background 120ms ease;
+  font-family: "Courier New", "Andale Mono", monospace;
+}
+
+.option-button:active {
+  transform: scale(0.98);
+}
+
+.option-button:focus-visible,
+.primary-button:focus-visible,
+.secondary-button:focus-visible,
+.text-input:focus-visible,
+.text-area:focus-visible {
+  outline: 3px solid #30b7aa;
+  outline-offset: 2px;
+}
+
+.option-button.selected {
+  box-shadow: 0 0 0 4px rgba(48, 183, 170, 0.25);
+}
+
+.yes-button {
+  background: #d7ffe7;
+}
+
+.yes-button.selected {
+  background: #8ff3b7;
+}
+
+.no-block {
+  border-top: 2px dashed rgba(31, 33, 54, 0.4);
+  padding-top: 12px;
+}
+
+.no-button {
+  background: #ffe0d6;
+  color: #631d1d;
+}
+
+.taunt-message {
+  margin: 2px 0 0;
+  font-weight: 700;
+  color: #a32323;
+}
+
+.selection-card {
+  border: 2px solid #1f2136;
+  border-radius: 12px;
+  padding: 12px;
+  display: grid;
+  gap: 10px;
+  background: #f9fbff;
+}
+
+.selection-headline {
+  margin: 0;
+}
+
+.details-fieldset {
+  margin: 0;
+  border: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.details-fieldset legend {
+  margin-bottom: 8px;
+  font-weight: 700;
+}
+
+.small-option {
+  background: #fef7d6;
+}
+
+.primary-button,
+.secondary-button {
+  min-height: 52px;
+  border: 2px solid #1f2136;
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+}
+
+.primary-button {
+  background: #30b7aa;
+  color: #052019;
+}
+
+.primary-button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.secondary-button {
+  background: #ffe991;
+  color: #312603;
+}
+
+.error-message {
+  margin: 0;
+  color: #a32323;
+  font-weight: 700;
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 15;
+  background: rgba(24, 26, 37, 0.56);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding:
+    calc(14px + env(safe-area-inset-top))
+    12px
+    calc(14px + env(safe-area-inset-bottom));
+}
+
+.modal-card {
+  width: min(100%, 440px);
+  border: 3px solid #1f2136;
+  border-radius: 16px;
+  background: #fff6f6;
+  padding: 16px;
+  display: grid;
+  gap: 10px;
+}
+
+.modal-card p {
+  margin: 0;
+}
+
+.modal-actions {
+  display: grid;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.profile-image {
+  width: min(100%, 280px);
+  margin: 16px auto;
+  display: block;
+  border-radius: 18px;
+  border: 3px solid #1f2136;
+  background: #fff;
+}
+
+.summary-box {
+  border: 2px solid #1f2136;
+  border-radius: 12px;
+  padding: 12px;
+  background: #f8faff;
+  display: grid;
+  gap: 6px;
+}
+
+.summary-box p {
+  margin: 0;
+}
+
+.result-yes {
+  background: rgba(236, 255, 247, 0.96);
+}
+
+.result-no {
+  background: rgba(255, 241, 237, 0.96);
+}
+
+@media (min-width: 640px) {
+  .main-card,
+  .result-card {
+    padding: 24px;
+  }
+
+  .option-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .details-fieldset {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
