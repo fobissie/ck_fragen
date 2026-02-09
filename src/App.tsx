@@ -26,11 +26,11 @@ const NO_TAUNTS = [
 const NO_MODAL_STEPS = [
   {
     title: "Bist du dir sicher?",
-    text: "Ein Nein ist erlaubt, aber nur fuer Menschen mit wirklich starker Entschlossenheit.",
+    text: "Ein Nein ist erlaubt, aber nur für Menschen mit wirklich starker Entschlossenheit.",
   },
   {
     title: "Wirklich sicher?",
-    text: "Wir koennten auch einfach lachen, losziehen und den Samstag gewinnen.",
+    text: "Wir könnten auch einfach lachen, losziehen und den Samstag gewinnen.",
   },
   {
     title: "Letzte Chance!",
@@ -70,7 +70,6 @@ function App() {
   const [countdown, setCountdown] = useState(() => getCountdownParts(deadline));
   const [deadlineJoke, setDeadlineJoke] = useState("");
 
-  const [respondentName, setRespondentName] = useState("");
   const [selectedChoiceType, setSelectedChoiceType] = useState<ChoiceType | null>(
     null,
   );
@@ -194,7 +193,6 @@ function App() {
     setCompletionState("form");
     setSubmissionSummary(null);
     setSubmissionError("");
-    setRespondentName("");
     setSelectedChoiceType(null);
     setSelectedChoiceLabel("");
     setSelectedPlanOption("");
@@ -284,7 +282,6 @@ function App() {
     const finalChoiceType = selectedChoiceType;
 
     const payload: SubmitResponseRequest = {
-      respondentName: respondentName.trim() || undefined,
       choiceType: finalChoiceType,
       choiceLabel: selectedChoiceLabel,
       selectedPlanOption:
@@ -317,7 +314,7 @@ function App() {
         throw new Error(
           body && "message" in body
             ? body.message
-            : "Antwort konnte nicht uebermittelt werden.",
+            : "Antwort konnte nicht übermittelt werden.",
         );
       }
 
@@ -345,7 +342,7 @@ function App() {
           <img
             className="profile-image"
             src="/images/me-placeholder.svg"
-            alt="Platzhalter fuer dein Bild"
+            alt="Platzhalter für dein Bild"
           />
           <div className="summary-box">
             <p>
@@ -361,9 +358,6 @@ function App() {
                 <strong>Deine Idee:</strong> {submissionSummary.ideaText}
               </p>
             ) : null}
-            <p>
-              <strong>Name:</strong> {submissionSummary.respondentName || "anonym"}
-            </p>
             <p>
               <strong>Abgesendet:</strong>{" "}
               {new Date(submissionSummary.submittedAtIso).toLocaleString("de-DE")}
@@ -381,11 +375,11 @@ function App() {
     return (
       <div className="app-shell">
         <main className="result-card result-no">
-          <p className="pill">Rueckmeldung gespeichert</p>
-          <h1>Danke dir fuer deine Zeit.</h1>
+          <p className="pill">Rückmeldung gespeichert</p>
+          <h1>Danke dir für deine Zeit.</h1>
           <p className="result-copy">
-            Ehrliche Antwort ist besser als gar keine. Deine Rueckmeldung wurde sauber
-            uebermittelt.
+            Ehrliche Antwort ist besser als gar keine. Deine Rückmeldung wurde sauber
+            übermittelt.
           </p>
           <div className="summary-box">
             <p>
@@ -397,7 +391,7 @@ function App() {
             </p>
           </div>
           <button type="button" className="primary-button" onClick={resetEntireFlow}>
-            Zurueck zum Start
+            Zurück zum Start
           </button>
         </main>
       </div>
@@ -407,13 +401,12 @@ function App() {
   return (
     <div className="app-shell">
       <main className="main-card">
-        <p className="pill">Level: Samstag-Planung</p>
         <h1>Bock auf Samstag?</h1>
         <p className="intro-copy">
-          Hey du! Ich habe gehoert, Samstag ist bei dir trainingsfrei. Oder vielleicht
-          doch nicht. Egal. Ich setze diesmal aus und haette richtig Lust, mit dir
+          Hey du! Ich habe gehört, Samstag ist bei dir trainingsfrei. Oder vielleicht
+          doch nicht. Egal. Ich setze diesmal aus und hätte richtig Lust, mit dir
           etwas zu unternehmen. Klick dich durch und sag mir deine Meinung. Der
-          Countdown laeuft bis Mittwoch, 04:44 Uhr in Deutschland (kein Druck... nur
+          Countdown läuft bis Mittwoch, 04:44 Uhr in Deutschland (kein Druck... nur
           ein klitzekleiner).
         </p>
 
@@ -435,20 +428,6 @@ function App() {
         </section>
 
         <form className="answer-form" onSubmit={submitResponse}>
-          <label htmlFor="respondent-name" className="input-label">
-            Dein Name (optional)
-          </label>
-          <input
-            id="respondent-name"
-            name="respondentName"
-            className="text-input"
-            placeholder="Optional: dein Name"
-            autoComplete="name"
-            maxLength={80}
-            value={respondentName}
-            onChange={(event) => setRespondentName(event.target.value)}
-          />
-
           <section className="option-block">
             <h2>Ja-Pfade</h2>
             <div className="option-grid">
@@ -473,7 +452,6 @@ function App() {
 
           <section className="option-block no-block">
             <h2>Nein-Pfade</h2>
-            <p className="tiny-copy">Im High-Mode erst nach 3 Bestaetigungen final.</p>
             <div className="option-grid">
               {noOrder.map((label) => {
                 const offset = noOffsets[label] ?? { x: 0, y: 0 };
@@ -501,7 +479,7 @@ function App() {
           {selectedChoiceType ? (
             <section className="selection-card">
               <p className="selection-headline">
-                Ausgewaehlt: <strong>{selectedChoiceLabel}</strong>
+                Ausgewählt: <strong>{selectedChoiceLabel}</strong>
               </p>
 
               {selectedChoiceType === "yes_pick_option" ? (
@@ -555,7 +533,7 @@ function App() {
             className="primary-button"
             disabled={!canSubmit || isSubmitting}
           >
-            {isSubmitting ? "Wird uebermittelt..." : "Antwort absenden"}
+            {isSubmitting ? "Wird übermittelt..." : "Antwort absenden"}
           </button>
         </form>
       </main>
@@ -563,7 +541,7 @@ function App() {
       {noModalContent ? (
         <div className="modal-overlay" role="presentation">
           <section className="modal-card" role="dialog" aria-modal="true">
-            <p className="pill">Nein-Bestaetigung {noModalStage}/3</p>
+            <p className="pill">Nein-Bestätigung {noModalStage}/3</p>
             <h3>{noModalContent.title}</h3>
             <p>{noModalContent.text}</p>
             <div className="modal-actions">
@@ -574,7 +552,7 @@ function App() {
               >
                 {noModalStage < 3
                   ? "Weiter (ich bleibe bei Nein)"
-                  : "Nein final bestaetigen"}
+                  : "Nein final bestätigen"}
               </button>
               <button
                 type="button"

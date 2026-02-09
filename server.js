@@ -16,7 +16,7 @@ app.use(express.json({ limit: "16kb" }));
 const yesLabels = new Set([
   "Ja, auf jeden Fall, aber keine Ahnung was",
   "Ja, auf jeden Fall und ich habe eine Idee",
-  "Ja, auf jeden Fall, und ich waehle aus deinen Optionen",
+  "Ja, auf jeden Fall, und ich wähle aus deinen Optionen",
 ]);
 
 const noLabels = new Set(["Ne, fuck nicht ab", "Ne, schon verplant", "Ne, eher nicht"]);
@@ -28,6 +28,7 @@ const WINDOW_MS = 4000;
 const MAX_TEXT = 500;
 const DIST_DIR = path.resolve(__dirname, "dist");
 const INDEX_FILE = path.join(DIST_DIR, "index.html");
+const TRANSIENT_LOGIC_STATUS = new Set([429, 500, 502, 503, 504]);
 
 function normalizeText(value, max = MAX_TEXT) {
   return String(value || "")
@@ -119,6 +120,66 @@ function buildMailPayload(payload, targetEmail) {
   };
 }
 
+function wait(ms) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}
+
+function isNoResponseFromLogicApp(status, bodyText) {
+  if (status !== 502) {
+    return false;
+  }
+
+  const normalizedBody = String(bodyText || "").toLowerCase();
+  return normalizedBody.includes("noresponse");
+}
+
+async function sendToLogicApp({ logicAppUrl, logicAppSecret, requestId, mailPayload }) {
+  const maxAttempts = 2;
+  let lastFailure = null;
+
+  for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+    const logicResponse = await fetch(logicAppUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-shared-secret": logicAppSecret,
+        "x-request-id": requestId,
+      },
+      body: JSON.stringify(mailPayload),
+    });
+
+    const bodyText = await logicResponse.text();
+
+    if (logicResponse.ok) {
+      return { ok: true, assumedSuccess: false, status: logicResponse.status, bodyText, attempt };
+    }
+
+    if (isNoResponseFromLogicApp(logicResponse.status, bodyText)) {
+      return { ok: true, assumedSuccess: true, status: logicResponse.status, bodyText, attempt };
+    }
+
+    lastFailure = {
+      status: logicResponse.status,
+      bodyText,
+      attempt,
+    };
+
+    if (!TRANSIENT_LOGIC_STATUS.has(logicResponse.status) || attempt === maxAttempts) {
+      break;
+    }
+
+    await wait(400 * attempt);
+  }
+
+  return {
+    ok: false,
+    assumedSuccess: false,
+    ...lastFailure,
+  };
+}
+
 app.get("/healthz", (_req, res) => {
   res.status(200).json({ ok: true });
 });
@@ -169,25 +230,31 @@ app.post("/api/response", async (req, res) => {
   const mailPayload = buildMailPayload(payload, targetEmail);
 
   try {
-    const logicResponse = await fetch(logicAppUrl, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-shared-secret": logicAppSecret,
-        "x-request-id": requestId,
-      },
-      body: JSON.stringify(mailPayload),
+    const logicResult = await sendToLogicApp({
+      logicAppUrl,
+      logicAppSecret,
+      requestId,
+      mailPayload,
     });
 
-    if (!logicResponse.ok) {
-      const logicBody = await logicResponse.text();
+    if (!logicResult.ok) {
       console.error("Logic App call failed", {
-        status: logicResponse.status,
-        body: logicBody.slice(0, 400),
+        status: logicResult.status,
+        body: String(logicResult.bodyText || "").slice(0, 400),
+        attempt: logicResult.attempt,
         requestId,
       });
       res.status(500).json({ ok: false, message: "Mail forwarding failed" });
       return;
+    }
+
+    if (logicResult.assumedSuccess) {
+      console.warn("Logic App returned NoResponse 502; treating as accepted", {
+        status: logicResult.status,
+        body: String(logicResult.bodyText || "").slice(0, 400),
+        attempt: logicResult.attempt,
+        requestId,
+      });
     }
 
     res.status(200).json({

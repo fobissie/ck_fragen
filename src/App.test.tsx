@@ -59,7 +59,7 @@ describe("App", () => {
       screen.getByRole("button", { name: "Weiter (ich bleibe bei Nein)" }),
     );
     await user.click(
-      screen.getByRole("button", { name: "Nein final bestaetigen" }),
+      screen.getByRole("button", { name: "Nein final bestätigen" }),
     );
 
     await user.click(screen.getByRole("button", { name: "Antwort absenden" }));
@@ -68,6 +68,6 @@ describe("App", () => {
       expect(fetch).toHaveBeenCalledTimes(1);
     });
 
-    expect(screen.getByText("Danke dir fuer deine Zeit.")).toBeInTheDocument();
+    expect(screen.getByText("Danke dir für deine Zeit.")).toBeInTheDocument();
   });
 });

@@ -21,7 +21,7 @@ export const YES_OPTIONS: YesOption[] = [
   },
   {
     type: "yes_pick_option",
-    label: "Ja, auf jeden Fall, und ich waehle aus deinen Optionen",
+    label: "Ja, auf jeden Fall, und ich wähle aus deinen Optionen",
   },
 ];
 
