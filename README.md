@@ -72,14 +72,11 @@ Der Workflow liegt in:
 
 - `.github/workflows/appservice.yml`
 
-Benötigte GitHub-Konfiguration:
+Benötigte GitHub-Konfiguration (OIDC/Service Principal):
 
-- Repository Secret: `AZURE_WEBAPP_PUBLISH_PROFILE`
-- Repository Variable: `AZURE_WEBAPP_NAME`
-
-Beispiel fuer die Variable:
-
-- `AZURE_WEBAPP_NAME=samstag-convincer-app`
+- `AZUREAPPSERVICE_CLIENTID_4D5CFA6E04834868BC302014292D6AD5`
+- `AZUREAPPSERVICE_TENANTID_C739A5D4B7364AA1B52460FF92520DD5`
+- `AZUREAPPSERVICE_SUBSCRIPTIONID_1AE7DD13BDB5413EA9084647DEC0622E`
 
 Der Workflow:
 
@@ -87,7 +84,8 @@ Der Workflow:
 2. fuehrt Tests aus
 3. baut das Frontend
 4. erstellt ein Deploy-Paket mit `dist/`, `server.js`, `package*.json`
-5. deployed zu Azure Web App
+5. meldet sich via `azure/login` an Azure an
+6. deployed `release.zip` zu Azure Web App (`ck-fragen`)
 
 ## Deploy Ablauf
 
