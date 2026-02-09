@@ -1,0 +1,47 @@
+name: Build and deploy to Azure App Service
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20.x"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm run test:run
+
+      - name: Build frontend
+        run: npm run build
+
+      - name: Prepare deployment package
+        run: |
+          rm -rf deploy release.zip
+          mkdir -p deploy
+          cp -R dist deploy/dist
+          cp server.js package.json package-lock.json deploy/
+          cd deploy
+          npm ci --omit=dev
+          zip -r ../release.zip .
+
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: ${{ vars.AZURE_WEBAPP_NAME }}
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          package: release.zip

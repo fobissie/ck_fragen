@@ -1,4 +1,17 @@
-const crypto = require("crypto");
+import crypto from "node:crypto";
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import express from "express";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const app = express();
+
+app.disable("x-powered-by");
+app.set("trust proxy", true);
+app.use(express.json({ limit: "16kb" }));
 
 const yesLabels = new Set([
   "Ja, auf jeden Fall, aber keine Ahnung was",
@@ -6,28 +19,15 @@ const yesLabels = new Set([
   "Ja, auf jeden Fall, und ich waehle aus deinen Optionen",
 ]);
 
-const noLabels = new Set([
-  "Ne, fuck nicht ab",
-  "Ne, schon verplant",
-  "Ne, eher nicht",
-]);
+const noLabels = new Set(["Ne, fuck nicht ab", "Ne, schon verplant", "Ne, eher nicht"]);
 
 const planOptions = new Set(["Weserpark+Kino", "Kino", "Schwarzlicht Minigolf"]);
 
 const requestWindowByIp = new Map();
 const WINDOW_MS = 4000;
 const MAX_TEXT = 500;
-
-function json(status, payload) {
-  return {
-    status,
-    headers: {
-      "Content-Type": "application/json; charset=utf-8",
-      "Cache-Control": "no-store",
-    },
-    body: payload,
-  };
-}
+const DIST_DIR = path.resolve(__dirname, "dist");
+const INDEX_FILE = path.join(DIST_DIR, "index.html");
 
 function normalizeText(value, max = MAX_TEXT) {
   return String(value || "")
@@ -40,7 +40,12 @@ function validatePayload(payload) {
   const choiceType = normalizeText(payload.choiceType, 30);
   const choiceLabel = normalizeText(payload.choiceLabel, 120);
 
-  if (!["yes_no_idea", "yes_have_idea", "yes_pick_option", "no"].includes(choiceType)) {
+  if (![
+    "yes_no_idea",
+    "yes_have_idea",
+    "yes_pick_option",
+    "no",
+  ].includes(choiceType)) {
     return "choiceType is invalid";
   }
 
@@ -114,25 +119,27 @@ function buildMailPayload(payload, targetEmail) {
   };
 }
 
-module.exports = async function submitResponse(context, req) {
+app.get("/healthz", (_req, res) => {
+  res.status(200).json({ ok: true });
+});
+
+app.post("/api/response", async (req, res) => {
   const body = req.body;
 
   if (!body || typeof body !== "object") {
-    context.res = json(400, { ok: false, message: "Request body must be a JSON object" });
+    res.status(400).json({ ok: false, message: "Request body must be a JSON object" });
     return;
   }
 
-  const ipHeader = req.headers["x-forwarded-for"] || req.headers["x-ms-client-principal-idp"];
-  const ip = normalizeText(ipHeader || "unknown", 120);
-
+  const ip = normalizeText(req.ip || req.headers["x-forwarded-for"] || "unknown", 120);
   if (checkRateLimit(ip)) {
-    context.res = json(429, { ok: false, message: "Too many requests. Try again shortly." });
+    res.status(429).json({ ok: false, message: "Too many requests. Try again shortly." });
     return;
   }
 
   const validationError = validatePayload(body);
   if (validationError) {
-    context.res = json(400, { ok: false, message: validationError });
+    res.status(400).json({ ok: false, message: validationError });
     return;
   }
 
@@ -141,11 +148,8 @@ module.exports = async function submitResponse(context, req) {
   const targetEmail = process.env.TARGET_EMAIL;
 
   if (!logicAppUrl || !logicAppSecret || !targetEmail) {
-    context.log.error("Missing Logic App configuration env vars");
-    context.res = json(500, {
-      ok: false,
-      message: "Server not configured for mail forwarding",
-    });
+    console.error("Missing Logic App configuration env vars");
+    res.status(500).json({ ok: false, message: "Server not configured for mail forwarding" });
     return;
   }
 
@@ -177,28 +181,57 @@ module.exports = async function submitResponse(context, req) {
 
     if (!logicResponse.ok) {
       const logicBody = await logicResponse.text();
-      context.log.error("Logic App call failed", {
+      console.error("Logic App call failed", {
         status: logicResponse.status,
         body: logicBody.slice(0, 400),
         requestId,
       });
-      context.res = json(500, {
-        ok: false,
-        message: "Mail forwarding failed",
-      });
+      res.status(500).json({ ok: false, message: "Mail forwarding failed" });
       return;
     }
 
-    context.res = json(200, {
+    res.status(200).json({
       ok: true,
       message: "saved_and_notified",
       requestId,
     });
   } catch (error) {
-    context.log.error("submitResponse failed", { error, requestId });
-    context.res = json(500, {
-      ok: false,
-      message: "Unexpected server error",
-    });
+    console.error("submitResponse failed", { error, requestId });
+    res.status(500).json({ ok: false, message: "Unexpected server error" });
   }
-};
+});
+
+app.use("/api", (_req, res) => {
+  res.status(404).json({ ok: false, message: "API route not found" });
+});
+
+if (fs.existsSync(DIST_DIR)) {
+  app.use(
+    express.static(DIST_DIR, {
+      index: false,
+      maxAge: "1h",
+    }),
+  );
+}
+
+app.use((req, res) => {
+  if (req.method !== "GET" && req.method !== "HEAD") {
+    res.status(404).json({ ok: false, message: "Route not found" });
+    return;
+  }
+
+  if (!fs.existsSync(INDEX_FILE)) {
+    res.status(503).json({
+      ok: false,
+      message: "Frontend build not found. Run npm run build before starting the server.",
+    });
+    return;
+  }
+
+  res.sendFile(INDEX_FILE);
+});
+
+const port = Number(process.env.PORT || 3000);
+app.listen(port, () => {
+  console.log(`Server running on port ${port}`);
+});
