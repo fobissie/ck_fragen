@@ -355,7 +355,7 @@ function App() {
           <p className="pill">Mission done</p>
           <h1>Alright, Samstag locked</h1>
           <p className="result-copy">
-            Stark. Deine Zusage ist angekommen und die Vorfreude ist jetzt offiziell.
+            Stark. Deine Zusage ist angekommen und die Vorfreude groß.
           </p>
           <img
             className="profile-image"
@@ -426,7 +426,7 @@ function App() {
           Vielleicht auch nicht. Hätte so oder so Lust mit dir etwas zu unternehmen! Du? 
           Kannst hier gerne deine ehrliche Meinung teilen.
           Countdown läuft bis Mittwoch, 04:44 Uhr (kein Druck...nur
-          bischen).
+          bisschen).
         </p>
 
         <section className="timer-box" aria-live="polite">

@@ -17,7 +17,7 @@ const yesLabels = new Set([
   "Ja, auf jeden Fall, aber keine Ahnung was",
   "Ja, auf jeden Fall und ich habe eine Idee",
   "Ja, auf jeden Fall, und ich wähle aus deinen Optionen",
-  "Ja, aber big Überraschungstag",
+  "Ja, aber großer Überraschungstag",
 ]);
 
 const noLabels = new Set(["Ne, fuck nicht ab", "Ne, schon verplant", "Ne, eher nicht"]);

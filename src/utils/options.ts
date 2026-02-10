@@ -25,7 +25,7 @@ export const YES_OPTIONS: YesOption[] = [
   },
   {
     type: "yes_no_idea",
-    label: "Ja, aber big Überraschungstag",
+    label: "Ja, aber großer Überraschungstag",
   },
 ];
 
