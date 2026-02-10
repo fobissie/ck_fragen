@@ -352,8 +352,8 @@ function App() {
     return (
       <div className="app-shell">
         <main className="result-card result-yes">
-          <p className="pill">Mission erfolgreich</p>
-          <h1>Yes! Samstag unlocked.</h1>
+          <p className="pill">Mission done</p>
+          <h1>Alright, Samstag locked</h1>
           <p className="result-copy">
             Stark. Deine Zusage ist angekommen und die Vorfreude ist jetzt offiziell.
           </p>
