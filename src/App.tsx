@@ -428,6 +428,11 @@ function App() {
           Countdown läuft bis Mittwoch, 04:44 Uhr (kein Druck...nur
           bisschen).
         </p>
+        <img
+          className="intro-photo"
+          src="/images/IMG_1330.jpeg"
+          alt="Foto unter dem Anfangstext"
+        />
 
         <section className="timer-box" aria-live="polite">
           <p>

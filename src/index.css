@@ -103,6 +103,15 @@ button {
   font-size: 1.02rem;
 }
 
+.intro-photo {
+  width: 100%;
+  margin-top: 12px;
+  border-radius: 14px;
+  border: 2px solid #1f2136;
+  object-fit: cover;
+  max-height: 280px;
+}
+
 .timer-box {
   margin-top: 16px;
   padding: 12px;
