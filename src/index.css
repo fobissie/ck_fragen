@@ -231,10 +231,16 @@ button {
   background: #ffe0d6;
   color: #631d1d;
   box-shadow: 0 0 0 0 rgba(240, 86, 74, 0);
+  transition: box-shadow 220ms ease, background 180ms ease, opacity 220ms ease;
 }
 
 .no-button.is-chaos {
   box-shadow: 0 0 0 3px rgba(240, 86, 74, 0.22);
+  transition:
+    transform 360ms cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 220ms ease,
+    background 180ms ease,
+    opacity 220ms ease;
 }
 
 .no-button.is-chaos.chaos-a {

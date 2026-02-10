@@ -64,6 +64,12 @@ function buildNoOffsets(): NoOffsets {
   return Object.fromEntries(NO_OPTIONS.map((label) => [label, randomOffset()]));
 }
 
+function buildNeutralNoOffsets(): NoOffsets {
+  return Object.fromEntries(
+    NO_OPTIONS.map((label) => [label, { x: 0, y: 0, rotate: 0 }]),
+  );
+}
+
 function App() {
   const [deadline, setDeadline] = useState<Date>(() =>
     getNextBerlinWednesdayDeadline(),
@@ -80,7 +86,7 @@ function App() {
 
   const [noAttemptCount, setNoAttemptCount] = useState(0);
   const [noOrder, setNoOrder] = useState<string[]>([...NO_OPTIONS]);
-  const [noOffsets, setNoOffsets] = useState<NoOffsets>(() => buildNoOffsets());
+  const [noOffsets, setNoOffsets] = useState<NoOffsets>(() => buildNeutralNoOffsets());
   const [hiddenNoLabel, setHiddenNoLabel] = useState<string | null>(null);
   const [noTaunt, setNoTaunt] = useState("");
   const [noModalStage, setNoModalStage] = useState<0 | 1 | 2 | 3>(0);
@@ -183,7 +189,7 @@ function App() {
   const resetNoChallenge = (): void => {
     setNoAttemptCount(0);
     setNoOrder([...NO_OPTIONS]);
-    setNoOffsets(buildNoOffsets());
+    setNoOffsets(buildNeutralNoOffsets());
     setHiddenNoLabel(null);
     setNoTaunt("");
     setNoModalStage(0);
@@ -274,7 +280,7 @@ function App() {
     setSelectedChoiceLabel(pendingNoLabel || NO_OPTIONS[0]);
     setNoTaunt("Okay, respektiert. Dieses Nein ist jetzt final.");
     setHiddenNoLabel(null);
-    setNoOffsets(buildNoOffsets());
+    setNoOffsets(buildNeutralNoOffsets());
     setNoOrder([...NO_OPTIONS]);
   };
 
