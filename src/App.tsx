@@ -39,7 +39,7 @@ const NO_MODAL_STEPS = [
 ] as const;
 
 type CompletionState = "form" | "submitting" | "yes_done" | "no_done";
-type NoOffsets = Record<string, { x: number; y: number }>;
+type NoOffsets = Record<string, { x: number; y: number; rotate: number }>;
 
 function shuffle<T>(values: readonly T[]): T[] {
   const result = [...values];
@@ -52,10 +52,11 @@ function shuffle<T>(values: readonly T[]): T[] {
   return result;
 }
 
-function randomOffset(): { x: number; y: number } {
+function randomOffset(): { x: number; y: number; rotate: number } {
   return {
-    x: Math.floor(Math.random() * 25) - 12,
-    y: Math.floor(Math.random() * 17) - 8,
+    x: Math.floor(Math.random() * 101) - 50,
+    y: Math.floor(Math.random() * 61) - 30,
+    rotate: Math.floor(Math.random() * 17) - 8,
   };
 }
 
@@ -85,6 +86,7 @@ function App() {
   const [noModalStage, setNoModalStage] = useState<0 | 1 | 2 | 3>(0);
   const [pendingNoLabel, setPendingNoLabel] = useState("");
   const [noConfirmLevel, setNoConfirmLevel] = useState(0);
+  const [noChaosTick, setNoChaosTick] = useState(0);
 
   const [completionState, setCompletionState] =
     useState<CompletionState>("form");
@@ -187,6 +189,7 @@ function App() {
     setNoModalStage(0);
     setPendingNoLabel("");
     setNoConfirmLevel(0);
+    setNoChaosTick(0);
   };
 
   const resetEntireFlow = (): void => {
@@ -207,11 +210,15 @@ function App() {
     setSubmissionError("");
     setSelectedChoiceType(type);
     setSelectedChoiceLabel(label);
+    if (type !== "yes_pick_option") {
+      setSelectedPlanOption("");
+    }
   };
 
   const randomizeNoButtons = (selectedLabel: string): void => {
     setNoOrder(shuffle(NO_OPTIONS));
     setNoOffsets(buildNoOffsets());
+    setNoChaosTick((current) => current + 1);
 
     if (noAttemptCount === 1) {
       const candidates = NO_OPTIONS.filter((label) => label !== selectedLabel);
@@ -227,6 +234,11 @@ function App() {
         setHiddenNoLabel((current) => (current === choiceToHide ? null : current));
       }, 900);
     }
+  };
+
+  const choosePlanOption = (planOption: PlanOption): void => {
+    chooseYesOption("yes_pick_option", YES_OPTIONS[2].label);
+    setSelectedPlanOption(planOption);
   };
 
   const chooseNoOption = (label: string): void => {
@@ -401,13 +413,13 @@ function App() {
   return (
     <div className="app-shell">
       <main className="main-card">
-        <h1>Bock auf Samstag?</h1>
+        <h1>Samstag noch Zeit?</h1>
         <p className="intro-copy">
           Grüß dich, habe gehört, dass du Samstag kein Training hast. Oder doch. 
           Oder nicht? Keine Ahnung. ABER! Ich gehe nicht zum Training. Vielleicht zur Uni. 
           Vielleicht auch nicht. Hätte so oder so Lust mit dir etwas zu unternehmen! Du? 
           Kannst hier gerne deine ehrliche Meinung teilen.
-          Countdown läuft bis Mittwoch, 04:44 Uhr in Deutschland (kein Druck... nur
+          Countdown läuft bis Mittwoch, 04:44 Uhr (kein Druck...nur
           ein klitzekleiner).
         </p>
 
@@ -449,23 +461,48 @@ function App() {
                 );
               })}
             </div>
+            <div className="plan-inline-block">
+              <p className="tiny-copy">Oder direkt aus meinen Optionen auswählen:</p>
+              <div className="option-grid plan-grid">
+                {PLAN_OPTIONS.map((option) => (
+                  <button
+                    type="button"
+                    key={option.id}
+                    className={`option-button small-option ${
+                      selectedPlanOption === option.id ? "selected" : ""
+                    }`}
+                    onClick={() => choosePlanOption(option.id)}
+                  >
+                    {option.label}
+                  </button>
+                ))}
+              </div>
+            </div>
           </section>
 
-          <section className="option-block no-block">
+          <section
+            className={`option-block no-block ${noAttemptCount > 0 ? "chaos-mode" : ""}`}
+          >
             <h2>Nein-Pfade</h2>
             <div className="option-grid">
-              {noOrder.map((label) => {
-                const offset = noOffsets[label] ?? { x: 0, y: 0 };
+              {noOrder.map((label, index) => {
+                const offset = noOffsets[label] ?? { x: 0, y: 0, rotate: 0 };
                 const isHidden = hiddenNoLabel === label;
+                const chaosClass =
+                  noAttemptCount > 0 ? (noChaosTick % 2 === 0 ? "chaos-a" : "chaos-b") : "";
 
                 return (
                   <button
                     type="button"
                     key={label}
-                    className="option-button no-button"
+                    className={`option-button no-button ${
+                      noAttemptCount > 0 ? "is-chaos" : ""
+                    } ${chaosClass}`}
                     style={{
-                      transform: `translate(${offset.x}px, ${offset.y}px)`,
-                      visibility: isHidden ? "hidden" : "visible",
+                      transform: `translate(${offset.x}px, ${offset.y}px) rotate(${offset.rotate}deg)`,
+                      opacity: isHidden ? 0.08 : 1,
+                      pointerEvents: isHidden ? "none" : "auto",
+                      transitionDelay: `${Math.min(index * 40, 160)}ms`,
                     }}
                     onClick={() => chooseNoOption(label)}
                   >
@@ -483,22 +520,15 @@ function App() {
                 Ausgewählt: <strong>{selectedChoiceLabel}</strong>
               </p>
 
-              {selectedChoiceType === "yes_pick_option" ? (
-                <fieldset className="details-fieldset">
-                  <legend>Welche Option soll es sein?</legend>
-                  {PLAN_OPTIONS.map((option) => (
-                    <button
-                      type="button"
-                      key={option.id}
-                      className={`option-button small-option ${
-                        selectedPlanOption === option.id ? "selected" : ""
-                      }`}
-                      onClick={() => setSelectedPlanOption(option.id)}
-                    >
-                      {option.label}
-                    </button>
-                  ))}
-                </fieldset>
+              {selectedChoiceType === "yes_pick_option" && selectedPlanOption ? (
+                <p className="tiny-copy">
+                  Gewählte Option: <strong>{selectedPlanOption}</strong>
+                </p>
+              ) : null}
+              {selectedChoiceType === "yes_pick_option" && !selectedPlanOption ? (
+                <p className="tiny-copy">
+                  Bitte direkt oben unter den Ja-Pfaden eine Option auswählen.
+                </p>
               ) : null}
 
               {selectedChoiceType === "yes_have_idea" ? (

@@ -100,22 +100,89 @@ function checkRateLimit(ip) {
   return false;
 }
 
+function escapeHtml(input) {
+  return String(input || "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll("\"", "&quot;")
+    .replaceAll("'", "&#39;");
+}
+
+function formatChoiceType(choiceType) {
+  if (choiceType === "no") return "Nein";
+  if (choiceType === "yes_have_idea") return "Ja (mit eigener Idee)";
+  if (choiceType === "yes_pick_option") return "Ja (aus deinen Optionen)";
+  return "Ja";
+}
+
 function buildMailPayload(payload, targetEmail) {
   const subjectPrefix = payload.choiceType === "no" ? "Neue Nein-Antwort" : "Neue Ja-Antwort";
+  const safeChoiceLabel = normalizeText(payload.choiceLabel, 120);
+  const safeIdea = normalizeText(payload.ideaText, MAX_TEXT);
+  const safePlan = normalizeText(payload.selectedPlanOption, 80);
+  const safeTz = normalizeText(payload.clientTz, 120);
+  const safeSubmittedAt = normalizeText(payload.submittedAtIso, 40);
+  const safeDeadline = normalizeText(payload.deadlineIso, 40);
+
+  const textLines = [
+    "Neue Rückmeldung zur Samstag-Seite",
+    "",
+    `Typ: ${formatChoiceType(payload.choiceType)}`,
+    `Auswahl: ${safeChoiceLabel}`,
+    safePlan ? `Option: ${safePlan}` : null,
+    safeIdea ? `Idee: ${safeIdea}` : null,
+    payload.choiceType === "no" ? `Nein-Bestätigungsstufe: ${payload.noConfirmLevel || 0}/3` : null,
+    `Abgesendet (ISO): ${safeSubmittedAt}`,
+    `Deadline (ISO): ${safeDeadline}`,
+    `Client-Zeitzone: ${safeTz}`,
+  ].filter(Boolean);
+
+  const textBody = textLines.join("\n");
+  const htmlBody = `
+    <div style="font-family:Arial,sans-serif;line-height:1.5;color:#222">
+      <h2 style="margin:0 0 12px">Neue Rückmeldung zur Samstag-Seite</h2>
+      <p style="margin:4px 0"><strong>Typ:</strong> ${escapeHtml(formatChoiceType(payload.choiceType))}</p>
+      <p style="margin:4px 0"><strong>Auswahl:</strong> ${escapeHtml(safeChoiceLabel)}</p>
+      ${safePlan ? `<p style="margin:4px 0"><strong>Option:</strong> ${escapeHtml(safePlan)}</p>` : ""}
+      ${safeIdea ? `<p style="margin:4px 0"><strong>Idee:</strong> ${escapeHtml(safeIdea)}</p>` : ""}
+      ${
+        payload.choiceType === "no"
+          ? `<p style="margin:4px 0"><strong>Nein-Bestätigungsstufe:</strong> ${Number(payload.noConfirmLevel || 0)}/3</p>`
+          : ""
+      }
+      <hr style="border:0;border-top:1px solid #ddd;margin:12px 0" />
+      <p style="margin:4px 0"><strong>Abgesendet (ISO):</strong> ${escapeHtml(safeSubmittedAt)}</p>
+      <p style="margin:4px 0"><strong>Deadline (ISO):</strong> ${escapeHtml(safeDeadline)}</p>
+      <p style="margin:4px 0"><strong>Client-Zeitzone:</strong> ${escapeHtml(safeTz)}</p>
+    </div>
+  `.trim();
 
   return {
     to: targetEmail,
-    subject: `${subjectPrefix}: ${payload.choiceLabel}`,
-    message: {
-      respondentName: normalizeText(payload.respondentName, 80) || "anonym",
+    subject: `${subjectPrefix}: ${safeChoiceLabel}`,
+    message: textBody,
+    textBody,
+    htmlBody,
+    messageData: {
       choiceType: payload.choiceType,
-      choiceLabel: payload.choiceLabel,
-      selectedPlanOption: payload.selectedPlanOption || null,
-      ideaText: payload.ideaText || null,
+      choiceLabel: safeChoiceLabel,
+      selectedPlanOption: safePlan || null,
+      ideaText: safeIdea || null,
       noConfirmLevel: payload.noConfirmLevel || null,
-      deadlineIso: payload.deadlineIso,
-      submittedAtIso: payload.submittedAtIso,
-      clientTz: payload.clientTz,
+      deadlineIso: safeDeadline,
+      submittedAtIso: safeSubmittedAt,
+      clientTz: safeTz,
+    },
+    details: {
+      choiceType: payload.choiceType,
+      choiceLabel: safeChoiceLabel,
+      selectedPlanOption: safePlan || null,
+      ideaText: safeIdea || null,
+      noConfirmLevel: payload.noConfirmLevel || null,
+      deadlineIso: safeDeadline,
+      submittedAtIso: safeSubmittedAt,
+      clientTz: safeTz,
     },
   };
 }

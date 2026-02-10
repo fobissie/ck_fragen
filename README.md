@@ -64,7 +64,7 @@ Setze in der Web App unter `Configuration -> Application settings`:
 1. Trigger: `When a HTTP request is received`
 2. Bedingung: Header `x-shared-secret` muss deinem Secret entsprechen
 3. Action: `Send an email (V2)` via Outlook oder SMTP Connector
-4. Mail-Body aus `triggerBody().message` bauen
+4. Mail-Body aus `triggerBody().htmlBody` (HTML) oder `triggerBody().textBody` (Plain) setzen
 
 ## GitHub Actions Deployment (App Service)
 
