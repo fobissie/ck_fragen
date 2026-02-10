@@ -39,7 +39,7 @@ describe("App", () => {
       expect(fetch).toHaveBeenCalledTimes(1);
     });
 
-    expect(screen.getByText("Yes! Samstag unlocked.")).toBeInTheDocument();
+    expect(screen.getByText("Alright, Samstag locked")).toBeInTheDocument();
   });
 
   it("requires three confirmation stages before no can be submitted", async () => {

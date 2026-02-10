@@ -23,6 +23,10 @@ export const YES_OPTIONS: YesOption[] = [
     type: "yes_pick_option",
     label: "Ja, auf jeden Fall, und ich wähle aus deinen Optionen",
   },
+  {
+    type: "yes_no_idea",
+    label: "Ja, aber big Überraschungstag",
+  },
 ];
 
 export const NO_OPTIONS = [
