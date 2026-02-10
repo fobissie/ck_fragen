@@ -421,12 +421,12 @@ function App() {
       <main className="main-card">
         <h1>Samstag noch Zeit?</h1>
         <p className="intro-copy">
-          Grüß dich, habe gehört, dass du Samstag kein Training hast. Oder doch. 
-          Oder nicht? Keine Ahnung. ABER! Ich gehe nicht zum Training. Vielleicht zur Uni. 
+          Grüß dich, habe gehört, dass du Samstag kein Training hast bzw. vielleicht nicht hingehst.
+          Oder doch. Oder nicht? Keine Ahnung. ABER! Ich gehe nicht zum Training. Vielleicht zur Uni. 
           Vielleicht auch nicht. Hätte so oder so Lust mit dir etwas zu unternehmen! Du? 
           Kannst hier gerne deine ehrliche Meinung teilen.
           Countdown läuft bis Mittwoch, 04:44 Uhr (kein Druck...nur
-          ein klitzekleiner).
+          bischen).
         </p>
 
         <section className="timer-box" aria-live="polite">
