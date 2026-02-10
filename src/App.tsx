@@ -17,10 +17,10 @@ import type {
   YesChoiceType,
 } from "./types";
 
-const DEADLINE_JOKE = "Hahaha hast du gedacht dass ich es so einfach mache , schlecht";
+const DEADLINE_JOKE = "Hahaha hast du gedacht dass ich es so einfach mache, schlecht";
 const NO_TAUNTS = [
   "Netter Versuch. Noch mal tippen.",
-  "Die Nein-Buttons sind heute im Speedrun-Modus.",
+  "Die Nein-Buttons sind schneller als du (bist echt slow).",
 ] as const;
 
 const NO_MODAL_STEPS = [
@@ -30,7 +30,7 @@ const NO_MODAL_STEPS = [
   },
   {
     title: "Wirklich sicher?",
-    text: "Wir könnten auch einfach lachen, losziehen und den Samstag gewinnen.",
+    text: "Wir könnten auch einfach lachen, losziehen und den Samstag genießen.",
   },
   {
     title: "Letzte Chance!",
@@ -341,8 +341,8 @@ function App() {
           </p>
           <img
             className="profile-image"
-            src="/images/me-placeholder.svg"
-            alt="Platzhalter für dein Bild"
+            src="/images/me-placeholder.jpeg"
+            alt="fs"
           />
           <div className="summary-box">
             <p>
@@ -403,9 +403,10 @@ function App() {
       <main className="main-card">
         <h1>Bock auf Samstag?</h1>
         <p className="intro-copy">
-          Hey du! Ich habe gehört, Samstag ist bei dir trainingsfrei. Oder vielleicht
-          doch nicht. Egal. Ich setze diesmal aus und hätte richtig Lust, mit dir
-          etwas zu unternehmen. Klick dich durch und sag mir deine Meinung. Der
+          Grüß dich, habe gehört, dass du Samstag kein Training hast. Oder doch. 
+          Oder nicht? Keine Ahnung. ABER! Ich gehe nicht zum Training. Vielleicht zur Uni. 
+          Vielleicht auch nicht. Hätte so oder so Lust mit dir etwas zu unternehmen! Du? 
+          Kannst hier gerne deine ehrliche Meinung teilen.
           Countdown läuft bis Mittwoch, 04:44 Uhr in Deutschland (kein Druck... nur
           ein klitzekleiner).
         </p>
